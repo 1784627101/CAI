@@ -1,439 +1,416 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="description" content="专业、安全、高速的软件下载站空壳模板 - 包含完整结构，易于填充内容">
-    <meta name="keywords" content="下载站,软件下载,免费软件,绿色软件,模板">
-    <meta name="author" content="YourSiteName">
-    <title>极速下载站</title>
-    
-    <!-- 引入Google Fonts提升字体质感 (可选，不影响功能) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome 6 (免费图标库，用于下载、箭头等图标) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <style>
-        /* ---------- 全局重置 & 变量 ---------- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>下载中心 · 三卡片</title>
+  <!-- 清爽现代风格，导航+卡片+下载按钮 -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-            line-height: 1.5;
-            scroll-behavior: smooth;
-        }
+    body {
+      background: #f4f7fb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        /* 容器公用宽度，响应式处理 */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+    /* 导航栏 */
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #e9eef3;
+    }
 
-        /* 头部导航样式 */
-        .header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(2px);
-            background-color: rgba(255, 255, 255, 0.96);
-        }
+    .nav-brand {
+      font-weight: 600;
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+      color: #1e2f4e;
+    }
 
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      align-items: center;
+    }
 
-        .logo-area a {
-            font-size: 1.8rem;
-            font-weight: 700;
-            text-decoration: none;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.3px;
-        }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #2c3e50;
+      font-size: 1.1rem;
+      padding: 0.3rem 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s, color 0.2s;
+    }
 
-        .logo-area span {
-            font-size: 0.9rem;
-            font-weight: 500;
-            background: none;
-            color: #475569;
-            display: inline-block;
-            margin-left: 8px;
-        }
+    .nav-links a:hover {
+      color: #0a66c2;
+      border-bottom-color: #0a66c2;
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 28px;
-            align-items: center;
-        }
+    /* 网站中心——链接占位，留空待添加 */
+    /* 主容器 */
+    .main {
+      flex: 1;
+      max-width: 1300px;
+      margin: 2.5rem auto;
+      padding: 0 2rem;
+      width: 100%;
+    }
 
-        .nav-links a {
-            text-decoration: none;
-            color: #334155;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
+    /* 页面标题 */
+    .page-header {
+      margin-bottom: 2.2rem;
+    }
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #3b82f6;
-        }
+    .page-header h1 {
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: #0b1e32;
+      letter-spacing: -0.02em;
+    }
 
-        /* 搜索框 (简单样式，便于后续扩展) */
-        .search-wrap {
-            display: flex;
-            align-items: center;
-            background: #f1f5f9;
-            border-radius: 40px;
-            padding: 6px 12px;
-        }
+    .page-header p {
+      color: #4a5c6c;
+      margin-top: 0.3rem;
+      font-size: 1.1rem;
+      border-left: 4px solid #0a66c2;
+      padding-left: 1rem;
+    }
 
-        .search-wrap i {
-            color: #94a3b8;
-        }
+    /* 卡片网格 */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
 
-        .search-wrap input {
-            border: none;
-            background: transparent;
-            padding: 8px 8px 8px 10px;
-            font-size: 0.9rem;
-            width: 180px;
-            outline: none;
-        }
+    /* 卡片样式 */
+    .download-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 1.8rem 1.5rem 2rem;
+      box-shadow: 0 12px 28px -8px rgba(0, 20, 40, 0.08), 0 4px 10px rgba(0, 0, 0, 0.02);
+      transition: transform 0.25s ease, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #eef3f8;
+    }
 
-        /* 主体区块 */
-        .hero {
-            background: linear-gradient(145deg, #eff6ff 0%, #ffffff 100%);
-            padding: 48px 0 40px;
-            border-bottom: 1px solid #e0e7ff;
-        }
+    .download-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 24px 38px -12px rgba(10, 102, 194, 0.12), 0 8px 18px rgba(0,0,0,0.04);
+      border-color: #cddff0;
+    }
 
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(120deg, #1e293b, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+    .card-icon {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
 
-        .hero p {
-            font-size: 1.1rem;
-            color: #334155;
-            max-width: 700px;
-        }
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: 650;
+      color: #13294b;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
 
-        /* 面包屑 (可选，增强导航) */
-        .breadcrumb {
-            margin: 20px 0 10px;
-            font-size: 0.85rem;
-            color: #64748b;
-        }
+    .card-desc {
+      color: #3a546d;
+      font-size: 0.98rem;
+      margin-bottom: 1.8rem;
+      line-height: 1.5;
+      flex: 1;
+    }
 
-        .breadcrumb a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
+    .file-meta {
+      background: #f0f6ff;
+      padding: 0.45rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      color: #1e4870;
+      margin-bottom: 1.8rem;
+      display: inline-block;
+      align-self: flex-start;
+      border: 1px solid #d9e6f5;
+    }
 
-        /* 下载列表卡片区域 */
-        .download-section {
-            padding: 48px 0 64px;
-        }
+    /* 下载按钮 */
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #0a66c2;
+      color: white;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.8rem 1.8rem;
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(10, 102, 194, 0.25);
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      text-decoration: none;
+      border: 1px solid #0a5cb0;
+      width: fit-content;
+    }
 
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 32px;
-            border-left: 5px solid #3b82f6;
-            padding-left: 18px;
-        }
+    .download-btn:hover {
+      background: #004182;
+      box-shadow: 0 8px 16px rgba(0, 65, 130, 0.25);
+    }
 
-        .download-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 28px;
-        }
+    .download-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-        /* 单个卡片 */
-        .download-card {
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            overflow: hidden;
-            border: 1px solid #eef2ff;
-        }
+    /* 简单footer (可选) */
+    .footer-note {
+      margin-top: 3rem;
+      text-align: center;
+      color: #7e95aa;
+      font-size: 0.9rem;
+      border-top: 1px dashed #cbd6e2;
+      padding-top: 2rem;
+    }
 
-        .download-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-content {
-            padding: 20px 24px 24px;
-        }
-
-        .software-icon {
-            width: 52px;
-            height: 52px;
-            background: #eef2ff;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 18px;
-            font-size: 28px;
-            color: #3b82f6;
-        }
-
-        .software-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            letter-spacing: -0.2px;
-        }
-
-        .software-desc {
-            color: #475569;
-            font-size: 0.9rem;
-            margin: 12px 0 16px;
-            line-height: 1.45;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .meta-info {
-            display: flex;
-            gap: 16px;
-            font-size: 0.8rem;
-            color: #5b6e8c;
-            border-top: 1px solid #eef2ff;
-            padding-top: 14px;
-            margin-top: 8px;
-        }
-
-        .meta-info span i {
-            margin-right: 4px;
-        }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #3b82f6;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: background 0.2s, transform 0.1s;
-            margin-top: 18px;
-            border: none;
-            cursor: pointer;
-            width: auto;
-        }
-
-        .download-btn:hover {
-            background: #2563eb;
-            transform: scale(0.98);
-        }
-
-        /* 右侧或底部广告/推荐位 (空壳占位) */
-        .extra-placeholder {
-            background: #f1f5f9;
-            border-radius: 20px;
-            padding: 28px;
-            text-align: center;
-            margin-top: 48px;
-            border: 1px dashed #cbd5e1;
-            color: #64748b;
-        }
-
-        /* 页脚 */
-        .footer {
-            background: #0f172a;
-            color: #cbd5e1;
-            padding: 40px 0 24px;
-            margin-top: 20px;
-        }
-
-        .footer-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 30px;
-        }
-
-        .footer-col p {
-            margin: 12px 0;
-            max-width: 260px;
-            font-size: 0.85rem;
-        }
-
-        .footer-col h4 {
-            color: white;
-            margin-bottom: 14px;
-            font-weight: 600;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 8px;
-        }
-
-        .footer-links a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: #60a5fa;
-        }
-
-        .copyright {
-            text-align: center;
-            border-top: 1px solid #1e293b;
-            padding-top: 24px;
-            margin-top: 28px;
-            font-size: 0.8rem;
-        }
-
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .nav-bar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .nav-links {
-                flex-wrap: wrap;
-                gap: 16px;
-            }
-            .hero h1 {
-                font-size: 1.9rem;
-            }
-            .container {
-                padding: 0 20px;
-            }
-            .download-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    /* 注释辅助——在实际页面中看不到，仅用于开发提示 */
+  </style>
 </head>
 <body>
-
-<!-- ================= 网站头部导航 ================= -->
-<header class="header">
-    <div class="container">
-        <div class="nav-bar">
-            <!-- Logo区域 可替换为图片或文字 -->
-            <div class="logo-area">
-                <a href="#">⚡ 极速下载站</a>
-                <span>安全 · 纯净 · 高速</span>
-            
-        </div>
+  <!-- 导航栏：首页 + 网站中心（链接留空待添加） -->
+  <header class="navbar">
+    <div class="nav-brand">📦 资源栈</div>
+    <div class="nav-links">
+      <!-- 首页链接指向当前页，表现“下载中心首页” -->
+      <a href="#">首页</a>
+      <!-- 
+        ⚠️ 网站中心链接：href 属性留空，方便你之后添加真实地址 
+        目前为空链接（#），点击不会跳转，你可以替换成需要的url。
+      -->
+      <a href="#" id="websiteCenterLink">网站中心</a>
     </div>
-</header>
+  </header>
 
-<!-- ================= 主视觉区 Hero ================= -->
-<section class="hero">
-    <div class="container">
-        <h1>下载内容</h1>
+  <main class="main">
+    <div class="page-header">
+      <h1>📥 下载中心</h1>
+      <p>精选资源 · 一键直达 · 安全快速</p>
     </div>
-</section>
 
-<!-- ================= 核心下载内容区 ================= -->
-<main class="download-section">
-    <div class="container">
-        <div class="section-title">
-            <i class="fas fa-download" style="margin-right: 10px;"></i> 内置软件
+    <!-- 卡片网格，内含三个卡片，注释里留有默认卡片代码示例，方便复制调整 -->
+    <div class="card-grid">
+      <!-- 
+        ============================================================
+        默认卡片代码（注释内，供你参考/扩展）：
+        <div class="download-card">
+          <div class="card-icon">📄</div>
+          <div class="card-title">示例文档</div>
+          <div class="card-desc">这是默认卡片描述，可根据需要修改。</div>
+          <span class="file-meta">.docx · 约1.2MB</span>
+          <button class="download-btn" data-url="你的下载链接">⬇ 下载</button>
         </div>
+        ============================================================
+      -->
+
+      <!-- 卡片 1 : 疑难杂症必看.docx -->
+      <div class="download-card">
+        <div class="card-icon">📘</div>
+        <div class="card-title">疑难杂症必看</div>
+        <div class="card-desc">
+          技术手册 · 常见问题排查指南。涵盖疑难杂症解决方案，必备参考。
+        </div>
+        <span class="file-meta">.docx 文档</span>
+        <!-- 下载按钮，绑定数据属性 -->
+        <button class="download-btn" data-download="card1">⬇ 下载文档</button>
+      </div>
+
+      <!-- 卡片 2 : Plain Craft Launcher 2.exe -->
+      <div class="download-card">
+        <div class="card-icon">🎮</div>
+        <div class="card-title">Plain Craft Launcher 2</div>
+        <div class="card-desc">
+          轻量级启动器，专为纯净体验优化。稳定版，即刻开玩。
+        </div>
+        <span class="file-meta">.exe · 可执行程序</span>
+        <button class="download-btn" data-download="card2">⬇ 下载启动器</button>
+      </div>
+
+      <!-- 卡片 3 : Trae CN-Setup-x64.exe -->
+      <div class="download-card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Trae CN 安装程序</div>
+        <div class="card-desc">
+          Trae 中文版 · 64位安装包。一键部署，快速搭建环境。
+        </div>
+        <span class="file-meta">.exe · 安装包</span>
+        <button class="download-btn" data-download="card3">⬇ 下载安装包</button>
+      </div>
+    </div>
+
+    <!-- 下方隐藏注释：网站中心链接预留空白，等待添加 -->
+    <!-- 
+      ============================================================
+      网站中心链接目前是 <a href="#">网站中心</a>，href为空。
+      你可在上方导航中找到 id="websiteCenterLink" 或直接修改href。
+      例如：<a href="https://你的网站中心地址">网站中心</a>
+      ============================================================
+    -->
+  </main>
+
+  <footer class="footer-note">
+    <!-- 小提示：所有下载链接均指向原始raw内容，点击即触发下载 -->
+    <span>⬇ 点击卡片按钮立即下载 · 资源托管于 GitHub</span>
+  </footer>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ---------- 定义三个下载链接 (直接使用你提供的 raw URL) ----------
+      const DOWNLOAD_URLS = {
+        // 第一个卡片: 疑难杂症必看.docx
+        card1: 'https://raw.githubusercontent.com/1784627101/CAI/refs/heads/cai/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E5%BF%85%E7%9C%8B.docx',
+        // 第二个卡片: Plain Craft Launcher 2.exe
+        card2: 'https://github.com/1784627101/CAI/blob/5a309af566e4e676a2f3805c45b8383392e0e882/Plain%20Craft%20Launcher%202.exe',
+        // 第三个卡片: Trae CN-Setup-x64.exe (注意链接中的 media.githubusercontent... )
+        card3: 'https://media.githubusercontent.com/media/1784627101/CAI/refs/heads/main/Trae%20CN-Setup-x64.exe'
+      };
+
+      // 辅助函数：触发下载 (通过创建隐藏a标签)
+      function triggerDownload(url, suggestedFilename = '') {
+        if (!url) {
+          console.warn('下载链接为空，无法下载');
+          return;
+        }
+
+        // 创建a标签，利用download属性尝试指定文件名 (浏览器对跨域raw可能有限制，但大多数情况仍会下载)
+        const link = document.createElement('a');
+        link.href = url;
         
-        <!-- 卡片网格  — 每个卡片代表一个可下载软件 -->
-        <div class="download-grid">
-            <!-- 卡片 1 -->
-            <div class="download-card">
-                <div class="card-content">
-                    <div class="software-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <div class="software-name">疑难杂症.docx</div>
-                    <div class="software-desc">
-                        精细制作文档
-                    </div>
-                    <div class="meta-info">
-                        
-                        <span><i class="fas fa-gem"></i> 完全免费</span>
-                    </div>
-                    <a href="https://raw.githubusercontent.com/1784627101/CAI/refs/heads/cai/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E5%BF%85%E7%9C%8B.docx" class="download-btn" data-soft="创意设计工具"> 
-                        <i class="fas fa-download"></i> 立即下载
-                    </a>
-                </div>
-            </div>
-            <!--卡片2---->
-            <div class="download-card">
-                <div class="card-content">
-                    <div class="software-icon">
-                        <i class="fa-notdog fa-solid fa-address-card"></i>
-                    </div>
-                    <div class="software-name">PCL启动器</div>
-                    <div class="software-desc">
-                        我的世界启动器
-                    </div>
-                    <div class="meta-info">
-                        
-                        <span><i class="fas fa-gem"></i> 完全免费</span>
-                    </div>
-                    <a href="https://raw.githubusercontent.com/1784627101/CAI/refs/heads/cai/Plain%20Craft%20Launcher%202.exe" class="download-btn" data-soft="创意设计工具"> 
-                        <i class="fas fa-download"></i> 立即下载
-                    </a>
-                </div>
-            </div>
-            <!--卡片3---->
-            <div class="download-card">
-                <div class="card-content">
-                    <div class="software-icon">
-                        <i class="fa-notdog fa-solid fa-address-card"></i>
-                    </div>
-                    <div class="software-name">Trae</div>
-                    <div class="software-desc">
-                        AI智能助手
-                    </div>
-                    <div class="meta-info">
-                        
-                        <span><i class="fas fa-gem"></i> 完全免费</span>
-                    </div>
-                    <a href="https://media.githubusercontent.com/media/1784627101/CAI/refs/heads/main/Trae%20CN-Setup-x64.exe" class="download-btn" data-soft="创意设计工具"> 
-                        <i class="fas fa-download"></i> 立即下载
-                    </a>
-                </div>
-            </div>
+        // 尝试从URL中提取文件名作为建议
+        let filename = suggestedFilename;
+        if (!filename) {
+          try {
+            const urlObj = new URL(url);
+            const pathname = urlObj.pathname;
+            const segments = pathname.split('/');
+            let lastSegment = segments.pop() || '';
+            // 对URL编码的中文等进行解码，得到更可读的文件名 (例如 %E7%96%91... -> 疑难杂症必看.docx)
+            filename = decodeURIComponent(lastSegment);
+            // 如果解码后还是空或者包含特殊字符，保留原样
+            if (!filename) filename = 'download';
+          } catch (e) {
+            filename = 'download';
+          }
+        }
+        
+        // 设置download属性，部分浏览器对于跨域资源可能忽略，但依然会导航下载
+        link.download = filename;
+        link.target = '_blank';    // 防止替换当前页面，作为后备
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
+      // 获取所有下载按钮 (类为 .download-btn)
+      const downloadButtons = document.querySelectorAll('.download-btn');
 
+      // 为每个按钮绑定点击事件
+      downloadButtons.forEach(btn => {
+        btn.addEventListener('click', function(event) {
+          // 获取自定义属性 data-download 的值 (card1 / card2 / card3)
+          const downloadKey = this.getAttribute('data-download');
+          
+          if (!downloadKey) {
+            console.warn('按钮未设置 data-download 属性');
+            return;
+          }
+
+          const targetUrl = DOWNLOAD_URLS[downloadKey];
+          if (!targetUrl) {
+            alert('下载链接配置有误，请检查。 Key: ' + downloadKey);
+            return;
+          }
+
+          // 额外从卡片内抓取标题作为文件名建议 (让下载文件名更友好)
+          const card = this.closest('.download-card');
+          let suggestedName = '';
+          if (card) {
+            const titleEl = card.querySelector('.card-title');
+            if (titleEl) {
+              // 结合标题和文件类型给出合理命名
+              const titleText = titleEl.textContent.trim();
+              // 简单推断扩展名 (根据链接或者元标记)
+              if (downloadKey === 'card1') suggestedName = `${titleText}.docx`;
+              else if (downloadKey === 'card2') suggestedName = `${titleText}.exe`;
+              else if (downloadKey === 'card3') suggestedName = `${titleText}.exe`;
+              else suggestedName = titleText;
+            }
+          }
+
+          // 如果没有从标题获取到，则留空，由函数自动从url提取
+          triggerDownload(targetUrl, suggestedName);
+        });
+      });
+
+      // 额外处理：如果用户直接点击"网站中心"（空链接），可给出友好提示（开发注释：可替换成实际链接）
+      const websiteLink = document.getElementById('websiteCenterLink');
+      if (websiteLink) {
+        websiteLink.addEventListener('click', function(e) {
+          // 如果 href 仍然是 "#" 或者空，我们阻止默认跳转，并提示"待添加"
+          const href = this.getAttribute('href');
+          if (!href || href === '#' || href.trim() === '') {
+            e.preventDefault();
+            // 温和提示：网站中心链接留空，等待添加。（实际注释要求已满足）
+            console.log('🔗 网站中心链接目前为空，你可以在此处添加实际地址。');
+            // 也可以显示一个小toast风格提示，但为了简洁，这里不做弹窗干扰，控制台输出即可。
+            // 如果希望用户看到，可以alert，但为避免频繁弹窗，不强制。
+            // 仅做演示，你也可以解除注释下一行：
+            // alert('网站中心链接暂未设置，可在代码中修改href。');
+          }
+          // 如果以后添加了真实链接，正常跳转。
+        });
+      }
+
+      // 附加说明：卡片下载完全按照需求：点击按钮立即下载对应raw文件。
+      // 注释中已保留默认卡片代码，便于后续新增卡片。
+    })();
+  </script>
+
+  <!-- 
+    ================================================================
+    设计备注 & 默认卡片代码（已在卡片网格上方以注释形式提供，同时也保留在此处）：
+    
+    默认卡片结构：
+    <div class="download-card">
+      <div class="card-icon">📄</div>
+      <div class="card-title">文档名称</div>
+      <div class="card-desc">描述文字</div>
+      <span class="file-meta">.docx</span>
+      <button class="download-btn" data-download="customKey">下载</button>
+    </div>
+    
+    若要新增卡片，复制上面的结构并设置 data-download 与 DOWNLOAD_URLS 中对应即可。
+    网站中心的链接在导航栏 <a href="#" id="websiteCenterLink">网站中心</a> 里，
+    href留空(目前是"#")，你可以修改成实际URL。
+    ================================================================
+  -->
 </body>
 </html>
