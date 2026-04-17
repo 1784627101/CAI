@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>下载中心 · 三卡片</title>
-  <!-- 清爽现代风格，导航+卡片+下载按钮 -->
+  <title>下载中心 · 三卡片 + 网站中心 + 问题反馈</title>
+  <!-- 清爽现代风格，导航+卡片+下载按钮 + 网站中心 + 反馈弹窗 -->
   <style>
     * {
       margin: 0;
@@ -30,6 +30,8 @@
       justify-content: space-between;
       flex-wrap: wrap;
       border-bottom: 1px solid #e9eef3;
+      position: relative;
+      z-index: 10;
     }
 
     .nav-brand {
@@ -41,26 +43,30 @@
 
     .nav-links {
       display: flex;
-      gap: 2.5rem;
+      gap: 2rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
-    .nav-links a {
+    .nav-links a, .nav-links button.nav-btn {
       text-decoration: none;
       font-weight: 500;
       color: #2c3e50;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       padding: 0.3rem 0;
       border-bottom: 2px solid transparent;
       transition: border-color 0.2s, color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
     }
 
-    .nav-links a:hover {
+    .nav-links a:hover, .nav-links button.nav-btn:hover {
       color: #0a66c2;
       border-bottom-color: #0a66c2;
     }
 
-    /* 网站中心——链接占位，留空待添加 */
     /* 主容器 */
     .main {
       flex: 1;
@@ -68,9 +74,9 @@
       margin: 2.5rem auto;
       padding: 0 2rem;
       width: 100%;
+      transition: filter 0.2s ease;
     }
 
-    /* 页面标题 */
     .page-header {
       margin-bottom: 2.2rem;
     }
@@ -98,7 +104,6 @@
       margin-top: 1rem;
     }
 
-    /* 卡片样式 */
     .download-card {
       background: #ffffff;
       border-radius: 24px;
@@ -149,7 +154,6 @@
       border: 1px solid #d9e6f5;
     }
 
-    /* 下载按钮 */
     .download-btn {
       display: inline-flex;
       align-items: center;
@@ -165,8 +169,6 @@
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(10, 102, 194, 0.25);
       transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-      text-decoration: none;
-      border: 1px solid #0a5cb0;
       width: fit-content;
     }
 
@@ -177,10 +179,222 @@
 
     .download-btn:active {
       transform: scale(0.97);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    /* 简单footer (可选) */
+    /* 网站中心浮层 */
+    .website-overlay, .feedback-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.2s;
+    }
+
+    .website-overlay.active, .feedback-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .website-drawer, .feedback-drawer {
+      background: #ffffff;
+      width: 90%;
+      max-width: 600px;
+      max-height: 85vh;
+      border-radius: 32px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fadeSlideUp 0.25s ease-out;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .drawer-header {
+      padding: 1.3rem 1.8rem;
+      border-bottom: 1px solid #eef2f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafcff;
+    }
+
+    .drawer-header h2 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #0f2b40;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .close-drawer {
+      background: none;
+      border: none;
+      font-size: 1.9rem;
+      cursor: pointer;
+      color: #6f8eae;
+      transition: color 0.2s;
+    }
+
+    .close-drawer:hover {
+      color: #0a66c2;
+    }
+
+    .links-list-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.2rem 1.5rem 1.8rem;
+    }
+
+    .url-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .url-item {
+      background: #f8fafd;
+      border-radius: 20px;
+      padding: 0.9rem 1.2rem;
+      transition: all 0.2s;
+      border: 1px solid #e9edf2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .url-item:hover {
+      background: #ffffff;
+      border-color: #cbdff2;
+    }
+
+    .url-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex: 3;
+      min-width: 180px;
+    }
+
+    .url-icon {
+      font-size: 1.5rem;
+    }
+
+    .url-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .url-name {
+      font-weight: 650;
+      color: #1e3a5f;
+      font-size: 1rem;
+    }
+
+    .url-link {
+      font-size: 0.75rem;
+      color: #5f7f9e;
+      word-break: break-all;
+    }
+
+    .url-action {
+      background: #eef3fc;
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #0a66c2;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .url-action:hover {
+      background: #0a66c2;
+      color: white;
+    }
+
+    /* 反馈表单样式 */
+    .feedback-form {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 0.95rem;
+    }
+
+    .form-group input, .form-group textarea {
+      padding: 0.8rem 1rem;
+      border-radius: 20px;
+      border: 1px solid #cfdfed;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      background: #fff;
+      resize: vertical;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #0a66c2;
+      box-shadow: 0 0 0 3px rgba(10,102,194,0.1);
+    }
+
+    .feedback-submit {
+      background: #0a66c2;
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .feedback-submit:hover {
+      background: #004182;
+    }
+
+    .feedback-note {
+      font-size: 0.8rem;
+      color: #6c8eae;
+      text-align: center;
+      padding: 0 0 1rem 0;
+    }
+
     .footer-note {
       margin-top: 3rem;
       text-align: center;
@@ -190,227 +404,315 @@
       padding-top: 2rem;
     }
 
-    /* 注释辅助——在实际页面中看不到，仅用于开发提示 */
+    @media (max-width: 650px) {
+      .navbar {
+        padding: 0.8rem 1rem;
+      }
+      .nav-links {
+        gap: 1.2rem;
+      }
+      .main {
+        padding: 0 1rem;
+      }
+      .url-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- 导航栏：首页 + 网站中心（链接留空待添加） -->
   <header class="navbar">
     <div class="nav-brand">📦 资源栈</div>
     <div class="nav-links">
-      <!-- 首页链接指向当前页，表现“下载中心首页” -->
-      <a href="#">首页</a>
-      <!-- 
-        ⚠️ 网站中心链接：href 属性留空，方便你之后添加真实地址 
-        目前为空链接（#），点击不会跳转，你可以替换成需要的url。
-      -->
-      <a href="https://github.com/1784627101/CAI/raw/refs/heads/cai/web.html">网站中心</a>
+      <a href="#" id="homeLink">首页</a>
+      <button class="nav-btn" id="websiteCenterBtn">网站中心</button>
+      <!-- 新增：问题反馈按钮 -->
+      <button class="nav-btn" id="feedbackBtn">问题反馈</button>
     </div>
   </header>
 
-  <main class="main">
+  <main class="main" id="mainContent">
     <div class="page-header">
       <h1>📥 下载中心</h1>
       <p>精选资源 · 一键直达 · 安全快速</p>
     </div>
-
-    <!-- 卡片网格，内含三个卡片，注释里留有默认卡片代码示例，方便复制调整 -->
     <div class="card-grid">
-      <!-- 
-        ============================================================
-        默认卡片代码（注释内，供你参考/扩展）：
-        <div class="download-card">
-          <div class="card-icon">📄</div>
-          <div class="card-title">示例文档</div>
-          <div class="card-desc">这是默认卡片描述，可根据需要修改。</div>
-          <span class="file-meta">.docx · 约1.2MB</span>
-          <button class="download-btn" data-url="你的下载链接">⬇ 下载</button>
-        </div>
-        ============================================================
-      -->
-
-      <!-- 卡片 1 : 疑难杂症必看.docx -->
       <div class="download-card">
         <div class="card-icon">📘</div>
         <div class="card-title">疑难杂症必看</div>
-        <div class="card-desc">
-          技术手册 · 常见问题排查指南。涵盖疑难杂症解决方案，必备参考。
-        </div>
+        <div class="card-desc">技术手册 · 常见问题排查指南。涵盖疑难杂症解决方案，必备参考。</div>
         <span class="file-meta">.docx 文档</span>
-        <!-- 下载按钮，绑定数据属性 -->
         <button class="download-btn" data-download="card1">⬇ 下载文档</button>
       </div>
-
-      <!-- 卡片 2 : Plain Craft Launcher 2.exe -->
       <div class="download-card">
         <div class="card-icon">🎮</div>
         <div class="card-title">Plain Craft Launcher 2</div>
-        <div class="card-desc">
-          轻量级启动器，专为纯净体验优化。稳定版，即刻开玩。
-        </div>
+        <div class="card-desc">轻量级启动器，专为纯净体验优化。稳定版，即刻开玩。</div>
         <span class="file-meta">.exe · 可执行程序</span>
         <button class="download-btn" data-download="card2">⬇ 下载启动器</button>
       </div>
-
-      <!-- 卡片 3 : Trae CN-Setup-x64.exe -->
       <div class="download-card">
         <div class="card-icon">⚙️</div>
         <div class="card-title">Trae CN 安装程序</div>
-        <div class="card-desc">
-          Trae 中文版 · 64位安装包。一键部署，快速搭建环境。
-        </div>
+        <div class="card-desc">Trae 中文版 · 64位安装包。一键部署，快速搭建环境。</div>
         <span class="file-meta">.exe · 安装包</span>
         <button class="download-btn" data-download="card3">⬇ 下载安装包</button>
       </div>
     </div>
-
-    <!-- 下方隐藏注释：网站中心链接预留空白，等待添加 -->
-    <!-- 
-      ============================================================
-      网站中心链接目前是 <a href="#">网站中心</a>，href为空。
-      你可在上方导航中找到 id="websiteCenterLink" 或直接修改href。
-      例如：<a href="https://你的网站中心地址">网站中心</a>
-      ============================================================
-    -->
   </main>
 
   <footer class="footer-note">
-    <!-- 小提示：所有下载链接均指向原始raw内容，点击即触发下载 -->
     <span>⬇ 点击卡片按钮立即下载 · 资源托管于 GitHub</span>
   </footer>
+
+  <!-- 网站中心浮层 -->
+  <div class="website-overlay" id="websiteOverlay">
+    <div class="website-drawer">
+      <div class="drawer-header">
+        <h2><span>🌐</span> 网站中心</h2>
+        <button class="close-drawer" id="closeDrawerBtn">&times;</button>
+      </div>
+      <div class="links-list-container">
+        <div class="url-list" id="dynamicUrlList"></div>
+      </div>
+      <div class="drawer-footer-note" style="padding: 0.8rem 1.5rem; border-top:1px solid #eef2f7; font-size:0.75rem; color:#7a93aa;">
+        💡 点击访问按钮跳转，可自由增删站点（修改下方数据数组）
+      </div>
+    </div>
+  </div>
+
+  <!-- 问题反馈浮层 (发送文字到 1784627101@qq.com) -->
+  <div class="feedback-overlay" id="feedbackOverlay">
+    <div class="feedback-drawer">
+      <div class="drawer-header">
+        <h2><span>📧</span> 问题反馈</h2>
+        <button class="close-drawer" id="closeFeedbackBtn">&times;</button>
+      </div>
+      <div class="feedback-form">
+        <div class="form-group">
+          <label>您的称呼（可选）</label>
+          <input type="text" id="feedbackName" placeholder="昵称 / 匿名">
+        </div>
+        <div class="form-group">
+          <label>联系方式（选填，便于回复）</label>
+          <input type="text" id="feedbackContact" placeholder="邮箱 / QQ / 微信">
+        </div>
+        <div class="form-group">
+          <label>反馈内容 *</label>
+          <textarea id="feedbackMessage" rows="5" placeholder="请详细描述您的问题或建议..."></textarea>
+        </div>
+        <button class="feedback-submit" id="submitFeedbackBtn">📤 发送反馈至邮箱</button>
+        <div class="feedback-note">反馈将发送到: 1784627101@qq.com (通过邮件客户端)</div>
+      </div>
+    </div>
+  </div>
 
   <script>
     (function() {
       "use strict";
 
-      // ---------- 定义三个下载链接 (直接使用你提供的 raw URL) ----------
+      // ---------- 下载链接配置 ----------
       const DOWNLOAD_URLS = {
-        // 第一个卡片: 疑难杂症必看.docx
         card1: 'https://raw.githubusercontent.com/1784627101/CAI/refs/heads/cai/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E5%BF%85%E7%9C%8B.docx',
-        // 第二个卡片: Plain Craft Launcher 2.exe
-        card2: 'https://raw.githubusercontent.com/1784627101/CAI/refs/heads/cai/Plain%20Craft%20Launcher%202.exe',
-        // 第三个卡片: Trae CN-Setup-x64.exe (注意链接中的 media.githubusercontent... )
+        card2: 'https://github.com/1784627101/CAI/blob/5a309af566e4e676a2f3805c45b8383392e0e882/Plain%20Craft%20Launcher%202.exe',
         card3: 'https://media.githubusercontent.com/media/1784627101/CAI/refs/heads/main/Trae%20CN-Setup-x64.exe'
       };
 
-      // 辅助函数：触发下载 (通过创建隐藏a标签)
       function triggerDownload(url, suggestedFilename = '') {
-        if (!url) {
-          console.warn('下载链接为空，无法下载');
-          return;
-        }
-
-        // 创建a标签，利用download属性尝试指定文件名 (浏览器对跨域raw可能有限制，但大多数情况仍会下载)
+        if (!url) return;
         const link = document.createElement('a');
         link.href = url;
-        
-        // 尝试从URL中提取文件名作为建议
         let filename = suggestedFilename;
         if (!filename) {
           try {
             const urlObj = new URL(url);
-            const pathname = urlObj.pathname;
-            const segments = pathname.split('/');
-            let lastSegment = segments.pop() || '';
-            // 对URL编码的中文等进行解码，得到更可读的文件名 (例如 %E7%96%91... -> 疑难杂症必看.docx)
-            filename = decodeURIComponent(lastSegment);
-            // 如果解码后还是空或者包含特殊字符，保留原样
+            const segments = urlObj.pathname.split('/');
+            let last = segments.pop() || '';
+            filename = decodeURIComponent(last);
             if (!filename) filename = 'download';
-          } catch (e) {
-            filename = 'download';
-          }
+          } catch(e) { filename = 'download'; }
         }
-        
-        // 设置download属性，部分浏览器对于跨域资源可能忽略，但依然会导航下载
         link.download = filename;
-        link.target = '_blank';    // 防止替换当前页面，作为后备
+        link.target = '_blank';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       }
 
-      // 获取所有下载按钮 (类为 .download-btn)
-      const downloadButtons = document.querySelectorAll('.download-btn');
-
-      // 为每个按钮绑定点击事件
-      downloadButtons.forEach(btn => {
-        btn.addEventListener('click', function(event) {
-          // 获取自定义属性 data-download 的值 (card1 / card2 / card3)
-          const downloadKey = this.getAttribute('data-download');
-          
-          if (!downloadKey) {
-            console.warn('按钮未设置 data-download 属性');
+      // 绑定下载按钮
+      document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const key = this.getAttribute('data-download');
+          if (!key || !DOWNLOAD_URLS[key]) {
+            alert('下载链接配置错误');
             return;
           }
-
-          const targetUrl = DOWNLOAD_URLS[downloadKey];
-          if (!targetUrl) {
-            alert('下载链接配置有误，请检查。 Key: ' + downloadKey);
-            return;
-          }
-
-          // 额外从卡片内抓取标题作为文件名建议 (让下载文件名更友好)
+          let suggested = '';
           const card = this.closest('.download-card');
-          let suggestedName = '';
           if (card) {
             const titleEl = card.querySelector('.card-title');
             if (titleEl) {
-              // 结合标题和文件类型给出合理命名
-              const titleText = titleEl.textContent.trim();
-              // 简单推断扩展名 (根据链接或者元标记)
-              if (downloadKey === 'card1') suggestedName = `${titleText}.docx`;
-              else if (downloadKey === 'card2') suggestedName = `${titleText}.exe`;
-              else if (downloadKey === 'card3') suggestedName = `${titleText}.exe`;
-              else suggestedName = titleText;
+              const t = titleEl.textContent.trim();
+              if (key === 'card1') suggested = `${t}.docx`;
+              else if (key === 'card2' || key === 'card3') suggested = `${t}.exe`;
+              else suggested = t;
             }
           }
-
-          // 如果没有从标题获取到，则留空，由函数自动从url提取
-          triggerDownload(targetUrl, suggestedName);
+          triggerDownload(DOWNLOAD_URLS[key], suggested);
         });
       });
 
-      // 额外处理：如果用户直接点击"网站中心"（空链接），可给出友好提示（开发注释：可替换成实际链接）
-      const websiteLink = document.getElementById('websiteCenterLink');
-      if (websiteLink) {
-        websiteLink.addEventListener('click', function(e) {
-          // 如果 href 仍然是 "#" 或者空，我们阻止默认跳转，并提示"待添加"
-          const href = this.getAttribute('href');
-          if (!href || href === '#' || href.trim() === '') {
-            e.preventDefault();
-            // 温和提示：网站中心链接留空，等待添加。（实际注释要求已满足）
-            console.log('🔗 网站中心链接目前为空，你可以在此处添加实际地址。');
-            // 也可以显示一个小toast风格提示，但为了简洁，这里不做弹窗干扰，控制台输出即可。
-            // 如果希望用户看到，可以alert，但为避免频繁弹窗，不强制。
-            // 仅做演示，你也可以解除注释下一行：
-            // alert('网站中心链接暂未设置，可在代码中修改href。');
-          }
-          // 如果以后添加了真实链接，正常跳转。
+      // ================= 网站中心: 网址数据 (留给你随意增删) =================
+      let websiteLinksData = [
+        { name: "Google 搜索", url: "https://www.google.com", icon: "🔍" },
+        { name: "GitHub 开源社区", url: "https://github.com", icon: "🐙" },
+        { name: "MDN Web 文档", url: "https://developer.mozilla.org/zh-CN/", icon: "📖" },
+        { name: "Stack Overflow", url: "https://stackoverflow.com", icon: "🧑‍💻" },
+        { name: "Bilibili 学习区", url: "https://www.bilibili.com", icon: "📺" }
+        // 在这里继续添加更多网址，按照格式 { name, url, icon } 即可
+      ];
+
+      const urlListContainer = document.getElementById('dynamicUrlList');
+      function renderWebsiteList() {
+        if (!urlListContainer) return;
+        urlListContainer.innerHTML = '';
+        if (!websiteLinksData.length) {
+          urlListContainer.innerHTML = '<div class="url-item">暂无网址，请在代码中添加 websiteLinksData 条目</div>';
+          return;
+        }
+        websiteLinksData.forEach(item => {
+          const urlItem = document.createElement('div');
+          urlItem.className = 'url-item';
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'url-info';
+          infoDiv.innerHTML = `
+            <div class="url-icon">${item.icon || '🌐'}</div>
+            <div class="url-text">
+              <span class="url-name">${escapeHtml(item.name)}</span>
+              <span class="url-link">${escapeHtml(item.url)}</span>
+            </div>
+          `;
+          const actionLink = document.createElement('a');
+          actionLink.href = item.url;
+          actionLink.target = '_blank';
+          actionLink.rel = 'noopener noreferrer';
+          actionLink.className = 'url-action';
+          actionLink.innerHTML = '访问 ➔';
+          urlItem.appendChild(infoDiv);
+          urlItem.appendChild(actionLink);
+          urlListContainer.appendChild(urlItem);
+        });
+      }
+      function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+      renderWebsiteList();
+
+      // 网站中心浮层逻辑
+      const websiteOverlay = document.getElementById('websiteOverlay');
+      const websiteCenterBtn = document.getElementById('websiteCenterBtn');
+      const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+      const homeLink = document.getElementById('homeLink');
+
+      function openWebsiteCenter() { if(websiteOverlay) { renderWebsiteList(); websiteOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; } }
+      function closeWebsiteCenter() { if(websiteOverlay) { websiteOverlay.classList.remove('active'); document.body.style.overflow = ''; } }
+      if(websiteCenterBtn) websiteCenterBtn.addEventListener('click', openWebsiteCenter);
+      if(closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeWebsiteCenter);
+      if(websiteOverlay) websiteOverlay.addEventListener('click', (e) => { if(e.target === websiteOverlay) closeWebsiteCenter(); });
+
+      // 首页按钮：关闭所有浮层并滚动到顶
+      if(homeLink) {
+        homeLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          if(websiteOverlay && websiteOverlay.classList.contains('active')) closeWebsiteCenter();
+          if(feedbackOverlay && feedbackOverlay.classList.contains('active')) closeFeedbackOverlay();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       }
 
-      // 附加说明：卡片下载完全按照需求：点击按钮立即下载对应raw文件。
-      // 注释中已保留默认卡片代码，便于后续新增卡片。
+      // ================= 问题反馈模块 (发送文字到 1784627101@qq.com) =================
+      const feedbackOverlay = document.getElementById('feedbackOverlay');
+      const feedbackBtn = document.getElementById('feedbackBtn');
+      const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
+      const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+
+      function openFeedbackOverlay() { if(feedbackOverlay) { feedbackOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; } }
+      function closeFeedbackOverlay() { if(feedbackOverlay) { feedbackOverlay.classList.remove('active'); document.body.style.overflow = ''; } }
+
+      if(feedbackBtn) feedbackBtn.addEventListener('click', openFeedbackOverlay);
+      if(closeFeedbackBtn) closeFeedbackBtn.addEventListener('click', closeFeedbackOverlay);
+      if(feedbackOverlay) feedbackOverlay.addEventListener('click', (e) => { if(e.target === feedbackOverlay) closeFeedbackOverlay(); });
+
+      // 发送反馈：构造 mailto 链接，默认调用本地邮件客户端，内容预先填充。
+      // 由于要求“可以填写发送文字到 1784627101@qq.com”，使用 mailto 方式是最符合原生且无需后端。
+      // 同时为了避免过于突兀，提供复制备选方案。但完全满足填写文字并发送至指定邮箱。
+      function sendFeedbackToEmail() {
+        const nameInput = document.getElementById('feedbackName');
+        const contactInput = document.getElementById('feedbackContact');
+        const messageTextarea = document.getElementById('feedbackMessage');
+        
+        const name = nameInput ? nameInput.value.trim() : '';
+        const contact = contactInput ? contactInput.value.trim() : '';
+        const message = messageTextarea ? messageTextarea.value.trim() : '';
+        
+        if (!message) {
+          alert('请填写反馈内容');
+          return;
+        }
+        
+        // 构建邮件正文
+        let body = `反馈内容：\n${message}\n\n`;
+        if (name) body += `称呼：${name}\n`;
+        if (contact) body += `联系方式：${contact}\n`;
+        body += `\n—— 来自下载中心用户反馈 ——\n发送时间：${new Date().toLocaleString()}`;
+        
+        const subject = `【用户反馈】来自资源栈下载中心 - ${name ? name : '匿名用户'}`;
+        const mailtoLink = `mailto:1784627101@qq.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // 尝试打开邮件客户端
+        window.location.href = mailtoLink;
+        
+        // 提示用户（由于部分浏览器可能无法唤起，给予友好提示）
+        setTimeout(() => {
+          alert('已尝试打开邮件客户端，请继续发送邮件。如果没有自动弹出，请手动复制反馈内容发送至 1784627101@qq.com，感谢您的反馈！');
+        }, 100);
+        
+        // 可选清空表单，但不清空让用户保留也行，不清空更友好
+        // 不强制关闭浮层，让用户完成邮件发送后再关闭
+      }
+      
+      if(submitFeedbackBtn) {
+        submitFeedbackBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          sendFeedbackToEmail();
+          // 延迟关闭？为了防止界面跳转后闪动，不自动关闭，用户可以手动关闭弹窗
+          // 但一般点击后页面会跳转到邮件程序，用户可自行关闭浮层。
+          // 提供一个轻提示
+        });
+      }
+      
+      // 全局辅助：允许通过控制台修改网站列表，保持灵活性
+      window.updateWebsiteLinks = function(newLinks) {
+        if(Array.isArray(newLinks)) { websiteLinksData = newLinks; renderWebsiteList(); }
+      };
+      
+      // 关闭浮层ESC键
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if(websiteOverlay && websiteOverlay.classList.contains('active')) closeWebsiteCenter();
+          if(feedbackOverlay && feedbackOverlay.classList.contains('active')) closeFeedbackOverlay();
+        }
+      });
+      
+      console.log('✅ 已加载：下载中心 + 网站中心(可配置网址) + 问题反馈(mailto)');
     })();
   </script>
-
   <!-- 
-    ================================================================
-    设计备注 & 默认卡片代码（已在卡片网格上方以注释形式提供，同时也保留在此处）：
-    
-    默认卡片结构：
-    <div class="download-card">
-      <div class="card-icon">📄</div>
-      <div class="card-title">文档名称</div>
-      <div class="card-desc">描述文字</div>
-      <span class="file-meta">.docx</span>
-      <button class="download-btn" data-download="customKey">下载</button>
-    </div>
-    
-    若要新增卡片，复制上面的结构并设置 data-download 与 DOWNLOAD_URLS 中对应即可。
-    网站中心的链接在导航栏 <a href="#" id="websiteCenterLink">网站中心</a> 里，
-    href留空(目前是"#")，你可以修改成实际URL。
-    ================================================================
+    功能实现说明：
+    1. 三卡片下载区，保留原有下载能力。
+    2. 导航栏新增“问题反馈”按钮，点击打开弹窗，用户可填写文字内容，点击发送调用 mailto:1784627101@qq.com 并预填主题和正文。
+    3. 网站中心为一列列网址列表，可自由增删数据（修改websiteLinksData数组），点击“访问”在新标签页跳转。
+    4. 所有弹窗均支持遮罩关闭、ESC关闭，首页按钮可关闭所有浮层并滚动到顶部。
+    5. 符合原始样式风格，响应式布局。
   -->
 </body>
 </html>
