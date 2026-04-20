@@ -96,6 +96,31 @@
       padding-left: 1rem;
     }
 
+    /* 过滤栏 */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .search-input {
+      padding: 0.5rem 1rem;
+      border: 1px solid #d9e6f5;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      background: #f8fafd;
+      color: #1e3a5f;
+      transition: border-color 0.2s;
+      min-width: 250px;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #0a66c2;
+      box-shadow: 0 0 0 3px rgba(10,102,194,0.1);
+    }
+
     /* 卡片网格 */
     .card-grid {
       display: grid;
@@ -464,6 +489,14 @@
         padding: 0.85rem 1rem;
         font-size: 0.9rem;
       }
+      .filter-bar {
+        justify-content: center;
+      }
+      .search-input {
+        min-width: auto;
+        width: 100%;
+        max-width: 300px;
+      }
     }
 
   </style>
@@ -482,6 +515,9 @@
     <div class="page-header">
       <h1>📥 下载中心</h1>
       <p>精选资源 · 一键直达 · 安全快速</p>
+    </div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" placeholder="搜索文件名称..." id="searchInput">
     </div>
     <div class="card-grid">
       <div class="download-card">
@@ -559,6 +595,27 @@
   <script>
     (function() {
       "use strict";
+
+      // ---------- 搜索逻辑 ----------
+      let searchQuery = '';
+
+      function filterCards() {
+        const cards = document.querySelectorAll('.download-card');
+        cards.forEach(card => {
+          const title = card.querySelector('.card-title').textContent.toLowerCase();
+          const matchesSearch = title.includes(searchQuery.toLowerCase());
+          card.style.display = matchesSearch ? 'flex' : 'none';
+        });
+      }
+
+      // 搜索输入事件
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          searchQuery = this.value;
+          filterCards();
+        });
+      }
 
       // ---------- 下载链接配置 ----------
       const DOWNLOAD_URLS = {
