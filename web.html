@@ -6,6 +6,32 @@
   <title>网址中心 · 资源栈</title>
   <!-- 清爽现代风格，导航+网址列表 + 问题反馈 -->
   <style>
+    :root {
+      --bg-color: #f4f7fb;
+      --text-color: #1e3a5f;
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 20, 40, 0.08);
+      --border-color: #eef3f8;
+      --accent-color: #0a66c2;
+      --accent-hover: #004182;
+      --muted-text: #7e95aa;
+      --input-bg: #f8fafd;
+      --input-border: #d9e6f5;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #e0e0e0;
+      --card-bg: #2a2a2a;
+      --card-shadow: rgba(0, 0, 0, 0.3);
+      --border-color: #404040;
+      --accent-color: #4a9eff;
+      --accent-hover: #1a7cff;
+      --muted-text: #a0a0a0;
+      --input-bg: #333333;
+      --input-border: #555555;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -14,31 +40,33 @@
     }
 
     body {
-      background: #f4f7fb;
+      background: var(--bg-color);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      transition: background 0.3s ease;
     }
 
     /* 导航栏 */
     .navbar {
-      background: #ffffff;
+      background: var(--card-bg);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
       padding: 0.9rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      border-bottom: 1px solid #e9eef3;
+      border-bottom: 1px solid var(--border-color);
       position: relative;
       z-index: 10;
+      transition: background 0.3s ease;
     }
 
     .nav-brand {
       font-weight: 600;
       font-size: 1.6rem;
       letter-spacing: -0.01em;
-      color: #1e2f4e;
+      color: var(--text-color);
     }
 
     .nav-links {
@@ -51,7 +79,7 @@
     .nav-links a, .nav-links button.nav-btn {
       text-decoration: none;
       font-weight: 500;
-      color: #2c3e50;
+      color: var(--text-color);
       font-size: 1.05rem;
       padding: 0.3rem 0;
       border-bottom: 2px solid transparent;
@@ -63,8 +91,23 @@
     }
 
     .nav-links a:hover, .nav-links button.nav-btn:hover {
-      color: #0a66c2;
-      border-bottom-color: #0a66c2;
+      color: var(--accent-color);
+      border-bottom-color: var(--accent-color);
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: color 0.2s;
+      padding: 0.3rem;
+      border-radius: 50%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--input-bg);
     }
 
     /* 主容器 */
@@ -84,25 +127,25 @@
     .page-header h1 {
       font-size: 2.4rem;
       font-weight: 600;
-      color: #0b1e32;
+      color: var(--text-color);
       letter-spacing: -0.02em;
     }
 
     .page-header p {
-      color: #4a5c6c;
+      color: var(--muted-text);
       margin-top: 0.3rem;
       font-size: 1.1rem;
-      border-left: 4px solid #0a66c2;
+      border-left: 4px solid var(--accent-color);
       padding-left: 1rem;
     }
 
     /* 网址列表容器 */
     .url-list-container {
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: 24px;
       padding: 2rem;
-      box-shadow: 0 12px 28px -8px rgba(0, 20, 40, 0.08), 0 4px 10px rgba(0, 0, 0, 0.02);
-      border: 1px solid #eef3f8;
+      box-shadow: 0 12px 28px -8px var(--card-shadow), 0 4px 10px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-color);
     }
 
     .url-list {
@@ -112,11 +155,11 @@
     }
 
     .url-item {
-      background: #f8fafd;
+      background: var(--input-bg);
       border-radius: 20px;
       padding: 0.9rem 1.2rem;
       transition: all 0.2s;
-      border: 1px solid #e9edf2;
+      border: 1px solid var(--input-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -125,8 +168,8 @@
     }
 
     .url-item:hover {
-      background: #ffffff;
-      border-color: #cbdff2;
+      background: var(--card-bg);
+      border-color: var(--accent-color);
     }
 
     .url-info {
@@ -149,29 +192,30 @@
 
     .url-name {
       font-weight: 650;
-      color: #1e3a5f;
+      color: var(--text-color);
       font-size: 1rem;
     }
 
     .url-link {
       font-size: 0.75rem;
-      color: #5f7f9e;
+      color: var(--muted-text);
       word-break: break-all;
     }
 
     .url-action {
-      background: #eef3fc;
+      background: var(--input-bg);
       border-radius: 40px;
       padding: 0.4rem 1rem;
       font-size: 0.85rem;
       font-weight: 500;
-      color: #0a66c2;
+      color: var(--accent-color);
       text-decoration: none;
       transition: all 0.2s;
+      border: 1px solid var(--input-border);
     }
 
     .url-action:hover {
-      background: #0a66c2;
+      background: var(--accent-color);
       color: white;
     }
 
@@ -199,7 +243,7 @@
     }
 
     .feedback-drawer, .feedback-drawer {
-      background: #ffffff;
+      background: var(--card-bg);
       width: 90%;
       max-width: 600px;
       max-height: 85vh;
@@ -224,17 +268,17 @@
 
     .drawer-header {
       padding: 1.3rem 1.8rem;
-      border-bottom: 1px solid #eef2f7;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #fafcff;
+      background: var(--input-bg);
     }
 
     .drawer-header h2 {
       font-size: 1.6rem;
       font-weight: 600;
-      color: #0f2b40;
+      color: var(--text-color);
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -269,28 +313,29 @@
 
     .form-group label {
       font-weight: 600;
-      color: #1e3a5f;
+      color: var(--text-color);
       font-size: 0.95rem;
     }
 
     .form-group input, .form-group textarea {
       padding: 0.8rem 1rem;
       border-radius: 20px;
-      border: 1px solid #cfdfed;
+      border: 1px solid var(--input-border);
       font-size: 0.95rem;
       transition: 0.2s;
-      background: #fff;
+      background: var(--input-bg);
+      color: var(--text-color);
       resize: vertical;
     }
 
     .form-group input:focus, .form-group textarea:focus {
       outline: none;
-      border-color: #0a66c2;
+      border-color: var(--accent-color);
       box-shadow: 0 0 0 3px rgba(10,102,194,0.1);
     }
 
     .feedback-submit {
-      background: #0a66c2;
+      background: var(--accent-color);
       color: white;
       border: none;
       padding: 0.8rem;
@@ -303,12 +348,12 @@
     }
 
     .feedback-submit:hover {
-      background: #004182;
+      background: var(--accent-hover);
     }
 
     .feedback-note {
       font-size: 0.8rem;
-      color: #6c8eae;
+      color: var(--muted-text);
       text-align: center;
       padding: 0 0 1rem 0;
     }
@@ -316,9 +361,9 @@
     .footer-note {
       margin-top: 3rem;
       text-align: center;
-      color: #7e95aa;
+      color: var(--muted-text);
       font-size: 0.9rem;
-      border-top: 1px dashed #cbd6e2;
+      border-top: 1px dashed var(--border-color);
       padding-top: 2rem;
     }
 
@@ -329,8 +374,8 @@
       flex-wrap: wrap;
       gap: 0.8rem;
       padding: 0.9rem 1.5rem;
-      background: #111111;
-      color: #f7f8fb;
+      background: var(--card-bg);
+      color: var(--text-color);
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.12);
       border-radius: 24px;
       margin: 2rem auto 1rem;
@@ -346,7 +391,7 @@
     }
 
     .bottom-bar a {
-      color: #66b1ff;
+      color: var(--accent-color);
       text-decoration: none;
       font-weight: 600;
       white-space: nowrap;
@@ -354,7 +399,7 @@
     }
 
     .bottom-bar a:hover {
-      color: #e3f2ff;
+      color: var(--accent-hover);
     }
 
     @media (max-width: 650px) {
@@ -375,6 +420,9 @@
         padding: 0.85rem 1rem;
         font-size: 0.9rem;
       }
+      .theme-toggle {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
@@ -383,8 +431,10 @@
     <div class="nav-brand">📦 资源栈</div>
     <div class="nav-links">
       <a href="index.html">下载中心</a>
+      <a href="#" id="homeLink">首页</a>
       <!-- 新增：问题反馈按钮 -->
       <button class="nav-btn" id="feedbackBtn">问题反馈</button>
+      <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">🌙</button>
     </div>
   </header>
 
@@ -401,6 +451,11 @@
   <footer class="footer-note">
     <span>💡 点击访问按钮跳转，可自由增删站点（修改下方数据数组）</span>
   </footer>
+
+  <div class="bottom-bar">
+    <p>网址中心：精选优质站点，快速访问。</p>
+    <a href="#homeLink">返回顶部</a>
+  </div>
 
   
   <!-- 问题反馈浮层 (发送文字到 1784627101@qq.com) -->
@@ -432,6 +487,26 @@
   <script>
     (function() {
       "use strict";
+
+      // ---------- 主题切换逻辑 ----------
+      const themeToggle = document.getElementById('themeToggle');
+      const currentTheme = localStorage.getItem('theme') || 'light';
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        themeToggle.title = theme === 'dark' ? '切换到浅色模式' : '切换到深色模式';
+      }
+
+      // 初始化主题
+      setTheme(currentTheme);
+
+      // 切换主题事件
+      themeToggle.addEventListener('click', () => {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+      });
 
       // ================= 网址数据 (留给你随意增删) =================
       let websiteLinksData = [
