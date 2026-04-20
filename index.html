@@ -404,6 +404,48 @@
       padding-top: 2rem;
     }
 
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      padding: 0.9rem 1.5rem;
+      background: #111111;
+      color: #f7f8fb;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.12);
+      border-radius: 24px;
+      margin: 2rem auto 1rem;
+      max-width: 1300px;
+    }
+
+    .bottom-bar p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      flex: 1 1 220px;
+      min-width: 200px;
+    }
+
+    .bottom-bar a {
+      color: #66b1ff;
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .bottom-bar a:hover {
+      color: #e3f2ff;
+    }
+
+    body {
+      background: #f4f7fb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
     @media (max-width: 650px) {
       .navbar {
         padding: 0.8rem 1rem;
@@ -418,15 +460,19 @@
         flex-direction: column;
         align-items: flex-start;
       }
+      .bottom-bar {
+        padding: 0.85rem 1rem;
+        font-size: 0.9rem;
+      }
     }
+
   </style>
 </head>
 <body>
   <header class="navbar">
     <div class="nav-brand">📦 资源栈</div>
     <div class="nav-links">
-      <a href="#" id="homeLink">首页</a>
-      <button class="nav-btn" id="websiteCenterBtn">网站中心</button>
+      <a href="web.html">网页中心</a>
       <!-- 新增：问题反馈按钮 -->
       <button class="nav-btn" id="feedbackBtn">问题反馈</button>
     </div>
@@ -466,6 +512,7 @@
     <span>⬇ 点击卡片按钮立即下载 · 资源托管于 GitHub</span>
   </footer>
 
+  
   <!-- 网站中心浮层 -->
   <div class="website-overlay" id="websiteOverlay">
     <div class="website-drawer">
@@ -507,9 +554,7 @@
       </div>
     </div>
   </div>
-  <div>
-    <a href="web.html">hahaha</a>
-  </div>
+  
 
   <script>
     (function() {
@@ -566,68 +611,11 @@
         });
       });
 
-      // ================= 网站中心: 网址数据 (留给你随意增删) =================
-      let websiteLinksData = [
-        { name: "小飞机", url: "https://www.geo-fs.com", icon: "✈" },
-        { name: "GitHub 开源社区", url: "https://github.com", icon: "🐙" },
-        { name: "星陨计划wiki", url: "https://arkrecodewiki.miraheze.org/wiki/Main_Page", icon: "📖" },
-        { name: "本仓库", url: "https://github.com/1784627101/CAI", icon: "🧑‍💻" },
-        { name: "Bilibili 学习区", url: "https://www.bilibili.com", icon: "📺" },
-        { name: "奖状分类器", url: "https://1784627101.github.io/CD/", icon: "🎫" },
-        // 在这里继续添加更多网址，按照格式 { name, url, icon } 即可
-      ];
-
-      const urlListContainer = document.getElementById('dynamicUrlList');
-      function renderWebsiteList() {
-        if (!urlListContainer) return;
-        urlListContainer.innerHTML = '';
-        if (!websiteLinksData.length) {
-          urlListContainer.innerHTML = '<div class="url-item">暂无网址，请在代码中添加 websiteLinksData 条目</div>';
-          return;
-        }
-        websiteLinksData.forEach(item => {
-          const urlItem = document.createElement('div');
-          urlItem.className = 'url-item';
-          const infoDiv = document.createElement('div');
-          infoDiv.className = 'url-info';
-          infoDiv.innerHTML = `
-            <div class="url-icon">${item.icon || '🌐'}</div>
-            <div class="url-text">
-              <span class="url-name">${escapeHtml(item.name)}</span>
-              <span class="url-link">${escapeHtml(item.url)}</span>
-            </div>
-          `;
-          const actionLink = document.createElement('a');
-          actionLink.href = item.url;
-          actionLink.target = '_blank';
-          actionLink.rel = 'noopener noreferrer';
-          actionLink.className = 'url-action';
-          actionLink.innerHTML = '访问 ➔';
-          urlItem.appendChild(infoDiv);
-          urlItem.appendChild(actionLink);
-          urlListContainer.appendChild(urlItem);
-        });
-      }
-      function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-      renderWebsiteList();
-
-      // 网站中心浮层逻辑
-      const websiteOverlay = document.getElementById('websiteOverlay');
-      const websiteCenterBtn = document.getElementById('websiteCenterBtn');
-      const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-      const homeLink = document.getElementById('homeLink');
-
-      function openWebsiteCenter() { if(websiteOverlay) { renderWebsiteList(); websiteOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; } }
-      function closeWebsiteCenter() { if(websiteOverlay) { websiteOverlay.classList.remove('active'); document.body.style.overflow = ''; } }
-      if(websiteCenterBtn) websiteCenterBtn.addEventListener('click', openWebsiteCenter);
-      if(closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeWebsiteCenter);
-      if(websiteOverlay) websiteOverlay.addEventListener('click', (e) => { if(e.target === websiteOverlay) closeWebsiteCenter(); });
-
       // 首页按钮：关闭所有浮层并滚动到顶
+      const homeLink = document.getElementById('homeLink');
       if(homeLink) {
         homeLink.addEventListener('click', (e) => {
           e.preventDefault();
-          if(websiteOverlay && websiteOverlay.classList.contains('active')) closeWebsiteCenter();
           if(feedbackOverlay && feedbackOverlay.classList.contains('active')) closeFeedbackOverlay();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
@@ -694,20 +682,14 @@
         });
       }
       
-      // 全局辅助：允许通过控制台修改网站列表，保持灵活性
-      window.updateWebsiteLinks = function(newLinks) {
-        if(Array.isArray(newLinks)) { websiteLinksData = newLinks; renderWebsiteList(); }
-      };
-      
       // 关闭浮层ESC键
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          if(websiteOverlay && websiteOverlay.classList.contains('active')) closeWebsiteCenter();
           if(feedbackOverlay && feedbackOverlay.classList.contains('active')) closeFeedbackOverlay();
         }
       });
       
-      console.log('✅ 已加载：下载中心 + 网站中心(可配置网址) + 问题反馈(mailto)');
+      console.log('✅ 已加载：下载中心 + 问题反馈(mailto)');
     })();
   </script>
   <!-- 
