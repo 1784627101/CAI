@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>小组星星积分榜 - 局域网共享版</title>
+    <!-- PeerJS 库，用于建立点对点连接，无需后端服务器即可实现局域网通信 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* 移动端避免长按菜单，不影响按钮点击 */
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI Emoji', cursive, sans-serif;
+            background: linear-gradient(145deg, #fff5e6 0%, #ffe6d5 100%);
+            text-align: center;
+            padding: 20px 15px;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        h1 {
+            color: #ff8a65;
+            margin: 0 0 8px 0;
+            font-size: 2rem;
+            text-shadow: 3px 3px 0 #ffd9b5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .sync-status {
+            background: #fff0e0;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #b97f5c;
+            box-shadow: inset 0 1px 3px #0001, 0 2px 4px #ffe0c0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sync-status span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ffaa66;
+            box-shadow: 0 0 4px #ff9900;
+        }
+
+        .sync-status.connected span {
+            background-color: #2ecc71;
+            box-shadow: 0 0 8px #2ecc71;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.9);}
+            100% { opacity: 1; transform: scale(1.2);}
+        }
+
+        .room-info {
+            background: #ffe0c0;
+            border-radius: 60px;
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #8b5a2b;
+            backdrop-filter: blur(2px);
+        }
+        
+        .room-info input {
+            background: white;
+            border: 2px solid #ffb74d;
+            border-radius: 40px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            font-weight: normal;
+            font-family: monospace;
+            width: 180px;
+            text-align: center;
+            color: #5d3a1a;
+            outline: none;
+        }
+        
+        .room-info input:focus {
+            border-color: #ff9e2c;
+            box-shadow: 0 0 0 2px rgba(255, 158, 44, 0.3);
+        }
+
+        .room-info button {
+            background: #ffb74d;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 16px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .room-info button:active {
+            transform: scale(0.96);
+        }
+        
+        .join-panel {
+            background: #fff3e8;
+            border-radius: 50px;
+            margin: 8px auto 18px auto;
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .join-panel label {
+            font-weight: bold;
+            color: #c97e3a;
+        }
+        
+        .join-panel input {
+            border: 2px solid #ffd0a4;
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            width: 190px;
+            text-align: center;
+            font-family: monospace;
+            background: white;
+        }
+        
+        .join-panel button {
+            background: #ffa559;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 22px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        .teams-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .teams-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .team {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 35px;
+            padding: 18px 12px;
+            width: 200px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            position: relative;
+            border: 2px solid #ffe0b5;
+        }
+
+        .team-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            background: #ffefdf;
+            display: inline-block;
+            padding: 0 15px;
+            border-radius: 40px;
+            margin-bottom: 12px;
+            color: #d2691e;
+        }
+
+        .team-score {
+            min-height: 70px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin: 12px 3px;
+            background: #fffaf2;
+            border-radius: 28px;
+            padding: 8px 5px;
+        }
+
+        .star {
+            font-size: 26px;
+            display: inline-block;
+            animation: pop 0.2s ease-out;
+            transition: 0.1s;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.2); opacity: 0; }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .add-btn, .subtract-btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s;
+            min-width: 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .add-btn {
+            background-color: #ffb74d;
+            color: white;
+        }
+        .add-btn:active { background-color: #ff9e2c; transform: scale(0.95);}
+        .subtract-btn {
+            background-color: #cfd8dc;
+            color: #4e5b64;
+        }
+        .subtract-btn:active { background-color: #b0bec5; transform: scale(0.95);}
+
+        .reset-btn {
+            background-color: #bc9a7a;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 5px 0 #6d4c41;
+        }
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #6d4c41;
+        }
+
+        .leader {
+            border: 4px solid #ffd966;
+            box-shadow: 0 0 0 4px #ffe0a3, 0 12px 24px rgba(0,0,0,0.2);
+            background: #fffef7;
+        }
+
+        .medal {
+            position: absolute;
+            top: -12px;
+            right: -8px;
+            font-size: 34px;
+            opacity: 0;
+            transform: rotate(30deg) scale(0.7);
+            transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2));
+        }
+
+        .crown {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            font-size: 34px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px gold);
+        }
+
+        .leader .medal {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
+        .leader .crown {
+            transform: translateX(-50%) scale(1);
+        }
+
+        .celebration-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* 移动端友好 */
+        @media (max-width: 700px) {
+            .team {
+                width: 170px;
+                padding: 12px 8px;
+            }
+            .star { font-size: 22px; }
+            .add-btn, .subtract-btn { padding: 6px 10px; font-size: 0.9rem; min-width: 50px; }
+            .team-name { font-size: 1.3rem; }
+            .room-info input { width: 140px; font-size: 0.7rem; }
+        }
+
+        footer {
+            font-size: 11px;
+            margin-top: 24px;
+            color: #c2a186;
+        }
+    </style>
+</head>
+<body>
+
+<h1>⭐ 小组星星积分榜 ⭐ 
+    <div class="sync-status" id="syncStatusBadge">
+        <span></span> 未连接
+    </div>
+</h1>
+
+<div class="room-info">
+    📡 当前房间码: <strong id="roomIdDisplay">加载中...</strong>
+    <button id="copyRoomBtn">📋 复制</button>
+    <button id="refreshConnectBtn">🔄 刷新连接</button>
+</div>
+
+<!-- 手动加入其他房间的UI (核心修复: 输入框 + 主动加入) -->
+<div class="join-panel">
+    <label>🔗 加入其他房间:</label>
+    <input type="text" id="targetRoomInput" placeholder="输入房间码" autocomplete="off">
+    <button id="joinRoomBtn">✚ 切换到此房间</button>
+    <span style="font-size:0.7rem; color:#b97f5c;">(所有设备输相同码即可同步)</span>
+</div>
+
+<p style="margin:0 0 8px; font-size:0.8rem; color:#b46f40;">✨ 任何设备加入相同房间码，分数实时同步 ✨</p>
+
+<!-- 动态小组容器：支持1~9组 -->
+<div id="teamsContainer" class="teams-grid"></div>
+
+<button class="reset-btn" id="globalResetBtn">♻️ 重置所有小组星星</button>
+<div class="celebration-layer" id="celebrationLayer"></div>
+<footer>🎉 点击 +1/+2 增加星星，所有设备自动同步！🎉</footer>
+
+<script>
+    // ---------- 核心数据 ----------
+    const GROUP_COUNT = 9;
+    let scores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];  // 索引0不用
+    let lastCelebrationMilestone = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    
+    // ---------- P2P 同步变量 ----------
+    let peer = null;
+    let connections = [];        // 存储所有活跃连接对象 (Hub模式下是客户端连接)
+    let currentRoomId = null;    // 当前使用的房间ID (实际Hub ID前缀)
+    let isHost = false;          // 是否为当前房间的Hub（负责转发）
+    let currentHubPeerId = null; 
+    let isReconnecting = false;
+    
+    // 辅助函数: 生成随机后缀 (避免完全固定)
+    function generateRoomId() {
+        return 'star_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36);
+    }
+    
+    // 获取/初始化房间码 (localStorage 存储最近使用的房间码)
+    function initStoredRoomId() {
+        let stored = localStorage.getItem('star_room_last_id');
+        if (stored && stored.trim().length > 0) {
+            return stored;
+        } else {
+            let newId = generateRoomId();
+            localStorage.setItem('star_room_last_id', newId);
+            return newId;
+        }
+    }
+    
+    // 保存当前房间码到localStorage
+    function saveRoomIdToLocal(roomId) {
+        localStorage.setItem('star_room_last_id', roomId);
+        document.getElementById('roomIdDisplay').innerText = roomId;
+    }
+    
+    // 清理所有连接与peer
+    function destroyCurrentPeer() {
+        if (peer) {
+            try {
+                // 关闭所有连接
+                for (let conn of connections) {
+                    if (conn && conn.close) conn.close();
+                }
+                connections = [];
+                peer.destroy();
+            } catch(e) { console.warn(e); }
+            peer = null;
+        }
+        isHost = false;
+    }
+    
+    // 更新显示同步状态
+    function updateSyncStatus(connectedCount = 0) {
+        const badge = document.getElementById('syncStatusBadge');
+        if (connectedCount > 0) {
+            badge.className = 'sync-status connected';
+            badge.innerHTML = `<span></span> 📡 已同步 ${connectedCount} 台设备`;
+        } else {
+            badge.className = 'sync-status';
+            badge.innerHTML = `<span></span> 🕊️ 等待连接... (房间: ${currentRoomId || '?'})`;
+        }
+    }
+    
+    // 广播消息给所有连接的客户端（仅Hub会调用转发，或者非Hub模式下普通客户端直接发送）
+    function broadcastToPeers(message, excludeConn = null) {
+        // 策略: 如果当前是Hub，则转发给所有客户端 (除了源头)
+        if (isHost) {
+            for (let conn of connections) {
+                if (conn && conn.open && conn !== excludeConn) {
+                    conn.send(message);
+                }
+            }
+        } else {
+            // 客户端模式: 发送给所有已建立的连接（通常是跟Hub的一个连接）
+            for (let conn of connections) {
+                if (conn && conn.open) {
+                    conn.send(message);
+                }
+            }
+        }
+        // 清理无效连接
+        connections = connections.filter(conn => conn && conn.open);
+    }
+    
+    // 处理接收到的消息
+    function handlePeerMessage(data, senderConn) {
+        if (!data || !data.type) return;
+        
+        if (data.type === 'full_sync') {
+            const remoteScores = data.payload.scores;
+            if (remoteScores && remoteScores.length === GROUP_COUNT + 1) {
+                let changed = false;
+                for (let i = 1; i <= GROUP_COUNT; i++) {
+                    if (scores[i] !== remoteScores[i]) {
+                        changed = true;
+                        scores[i] = remoteScores[i];
+                        lastCelebrationMilestone[i] = scores[i];
+                    }
+                }
+                if (changed) {
+                    renderAllTeams();
+                    updateLeaderHighlights();
+                }
+            }
+        } 
+        else if (data.type === 'increment') {
+            const teamNum = data.team;
+            const newScore = data.newScore;
+            if (teamNum >= 1 && teamNum <= GROUP_COUNT && typeof newScore === 'number') {
+                if (scores[teamNum] !== newScore) {
+                    const oldMilestone = Math.floor(scores[teamNum] / 5);
+                    scores[teamNum] = newScore;
+                    const newMilestone = Math.floor(scores[teamNum] / 5);
+                    if (newMilestone > oldMilestone) {
+                        showCelebrationEffect();
+                    }
+                    lastCelebrationMilestone[teamNum] = scores[teamNum];
+                    updateSingleTeamUI(teamNum);
+                    updateLeaderHighlights();
+                }
+            }
+        }
+        else if (data.type === 'reset_all') {
+            for (let i = 1; i <= GROUP_COUNT; i++) {
+                scores[i] = 0;
+                lastCelebrationMilestone[i] = 0;
+            }
+            renderAllTeams();
+            updateLeaderHighlights();
+        }
+        else if (data.type === 'request_sync' && isHost) {
+            // 收到请求，发送全量分数
+            if (senderConn && senderConn.open) {
+                senderConn.send({
+                    type: 'full_sync',
+                    payload: { scores: [...scores] }
+                });
+            }
+        }
+    }
+    
+    // 设置连接的事件监听器
+    function setupConnection(conn, isIncoming = false) {
+        if (!conn) return;
+        conn.on('open', () => {
+            console.log('连接打开:', conn.peer);
+            if (!connections.includes(conn)) connections.push(conn);
+            updateSyncStatus(connections.length);
+            
+            // 如果是客户端刚刚与Hub建立连接，主动请求一次全量同步
+            if (!isHost && conn.peer === currentHubPeerId) {
+                conn.send({ type: 'request_sync' });
+            }
+            // 如果是Hub收到了新客户端连接，将当前完整分数发送给它
+            if (isHost && conn.open) {
+                conn.send({
+                    type: 'full_sync',
+                    payload: { scores: [...scores] }
+                });
+            }
+        });
+        
+        conn.on('data', (data) => {
+            handlePeerMessage(data, conn);
+            // Hub转发消息给其他所有客户端 (避免转发full_sync这类重复，但增量消息需要广播)
+            if (isHost && data.type !== 'full_sync' && data.type !== 'request_sync') {
+                for (let otherConn of connections) {
+                    if (otherConn !== conn && otherConn.open) {
+                        otherConn.send(data);
+                    }
+                }
+            }
+        });
+        
+        conn.on('close', () => {
+            connections = connections.filter(c => c !== conn);
+            updateSyncStatus(connections.length);
+        });
+        conn.on('error', (e) => console.warn("连接错误", e));
+    }
+    
+    // 核心: 加入或创建房间 (roomBaseId 就是房间标识码)
+    function joinOrCreateRoom(roomBaseId) {
+        if (!roomBaseId || roomBaseId.trim() === "") {
+            alert("请输入有效的房间码");
+            return false;
+        }
+        roomBaseId = roomBaseId.trim();
+        if (roomBaseId === currentRoomId && peer && !peer.destroyed) {
+            alert("已经是当前房间，无需重复加入");
+            return true;
+        }
+        
+        // 断开旧连接并销毁peer
+        destroyCurrentPeer();
+        
+        currentRoomId = roomBaseId;
+        saveRoomIdToLocal(currentRoomId);
+        
+        const hubPeerId = "hub_" + currentRoomId;
+        currentHubPeerId = hubPeerId;
+        
+        // 尝试以 hubPeerId 创建Peer，如果成功则是Host，否则连接至已有Hub
+        const newPeer = new Peer(hubPeerId, {
+            debug: 0,
+            config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }] }
+        });
+        
+        newPeer.on('open', (id) => {
+            console.log(`Peer open, id=${id}, 预期Hub ID=${hubPeerId}`);
+            if (id === hubPeerId) {
+                // 成功注册为Hub
+                isHost = true;
+                updateSyncStatus(connections.length);
+                newPeer.on('connection', (conn) => {
+                    setupConnection(conn, true);
+                });
+                alert(`✨ 成为房间 "${currentRoomId}" 的主机，等待其他设备加入即可同步`);
+            } else {
+                // 由于ID被占用或者生成了别的id，表示Hub已存在，本机作为客户端连接
+                isHost = false;
+                // 主动连接Hub
+                const connToHub = newPeer.connect(hubPeerId);
+                setupConnection(connToHub, false);
+                // 客户端也需要监听其他可能的入连（基本不会，但以防万一）
+                newPeer.on('connection', (conn) => {
+                    setupConnection(conn, true);
+                });
+            }
+        });
+        
+        newPeer.on('error', (err) => {
+            console.error("Peer错误: ", err);
+            if (err.type === 'peer-unavailable') {
+                updateSyncStatus(0);
+                document.getElementById('syncStatusBadge').innerHTML = `<span></span> ⚠️ 无法连接到房间, 请确保网络或刷新重试`;
+            } else if (err.type === 'id-taken') {
+                // ID已被占用，说明Hub存在但当前peer可能以随机ID重试，但上面逻辑已经在open中通过id比较处理，一般无需额外操作。这里做备: 重新以随机ID连接
+                if (newPeer && !newPeer.destroyed && newPeer.id !== hubPeerId) {
+                    // 已经是客户端模式，不用重复
+                } else if (newPeer.id === hubPeerId) {
+                    // 冲突但莫名其妙，重新生成随机ID作为客户端
+                    newPeer.destroy();
+                    setTimeout(() => {
+                        const fallbackPeer = new Peer({ debug: 0 });
+                        fallbackPeer.on('open', (randomId) => {
+                            const fallbackConn = fallbackPeer.connect(hubPeerId);
+                            setupConnection(fallbackConn, false);
+                            peer = fallbackPeer;
+                            isHost = false;
+                            fallbackPeer.on('connection', (c) => setupConnection(c, true));
+                        });
+                        peer = fallbackPeer;
+                    }, 100);
+                    return;
+                }
+            }
+        });
+        
+        peer = newPeer;
+        return true;
+    }
+    
+    // 手动切换房间 (使用输入框)
+    function switchToRoom() {
+        const inputRoom = document.getElementById('targetRoomInput').value.trim();
+        if (!inputRoom) {
+            alert("请输入房间码");
+            return;
+        }
+        // 更新存储与连接
+        joinOrCreateRoom(inputRoom);
+        document.getElementById('targetRoomInput').value = '';
+    }
+    
+    // ---------- UI 渲染与交互 ----------
+    function renderAllTeams() {
+        const container = document.getElementById('teamsContainer');
+        container.innerHTML = '';
+        for (let row = 0; row < 3; row++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'teams-row';
+            for (let col = 1; col <= 3; col++) {
+                const teamIdx = row * 3 + col;
+                if (teamIdx > GROUP_COUNT) break;
+                const teamCard = createTeamCard(teamIdx);
+                rowDiv.appendChild(teamCard);
+            }
+            container.appendChild(rowDiv);
+        }
+        updateLeaderHighlights();
+    }
+    
+    function createTeamCard(teamNum) {
+        const div = document.createElement('div');
+        div.className = 'team';
+        div.id = `team${teamNum}`;
+        div.innerHTML = `
+            <div class="medal">🏅</div>
+            <div class="crown">👑</div>
+            <div class="team-name">${getTeamName(teamNum)}</div>
+            <div class="team-score" id="score${teamNum}"></div>
+            <div class="button-group">
+                <button class="add-btn" data-team="${teamNum}" data-points="1">+1⭐</button>
+                <button class="add-btn" data-team="${teamNum}" data-points="2">+2⭐</button>
+                <button class="subtract-btn" data-team="${teamNum}" data-points="1">-1⭐</button>
+                <button class="subtract-btn" data-team="${teamNum}" data-points="2">-2⭐</button>
+            </div>
+        `;
+        const btns = div.querySelectorAll('.add-btn, .subtract-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const team = parseInt(btn.getAttribute('data-team'));
+                const points = parseInt(btn.getAttribute('data-points'));
+                const isAdd = btn.classList.contains('add-btn');
+                modifyScore(team, isAdd ? points : -points);
+            });
+        });
+        // 初始显示分数
+        updateSingleTeamUI(teamNum, div);
+        return div;
+    }
+    
+    function getTeamName(num) {
+        const chn = ['零','一','二','三','四','五','六','七','八','九'];
+        return `${chn[num]}组`;
+    }
+    
+    function updateSingleTeamUI(teamNum, specificCard = null) {
+        const scoreContainer = specificCard ? specificCard.querySelector(`.team-score`) : document.getElementById(`score${teamNum}`);
+        if (!scoreContainer) return;
+        scoreContainer.innerHTML = '';
+        for (let i = 0; i < scores[teamNum]; i++) {
+            const starSpan = document.createElement('span');
+            starSpan.className = 'star';
+            starSpan.textContent = '⭐';
+            scoreContainer.appendChild(starSpan);
+        }
+        const teamDiv = document.getElementById(`team${teamNum}`);
+        if (teamDiv) {
+            teamDiv.style.transform = "scale(1.02)";
+            setTimeout(() => { if(teamDiv) teamDiv.style.transform = ""; }, 180);
+        }
+    }
+    
+    function updateLeaderHighlights() {
+        let maxVal = Math.max(...scores.slice(1));
+        for (let i = 1; i <= GROUP_COUNT; i++) {
+            const el = document.getElementById(`team${i}`);
+            if (el) {
+                if (maxVal > 0 && scores[i] === maxVal) {
+                    el.classList.add('leader');
+                } else {
+                    el.classList.remove('leader');
+                }
+            }
+        }
+    }
+    
+    function modifyScore(teamNum, delta) {
+        let newScore = scores[teamNum] + delta;
+        if (newScore < 0) newScore = 0;
+        if (newScore === scores[teamNum]) return;
+        const oldMilestone = Math.floor(scores[teamNum] / 5);
+        scores[teamNum] = newScore;
+        const newMilestone = Math.floor(scores[teamNum] / 5);
+        if (newMilestone > oldMilestone) {
+            showCelebrationEffect();
+        }
+        lastCelebrationMilestone[teamNum] = scores[teamNum];
+        updateSingleTeamUI(teamNum);
+        updateLeaderHighlights();
+        
+        // 广播增量消息
+        const msg = {
+            type: 'increment',
+            team: teamNum,
+            delta: delta,
+            newScore: scores[teamNum]
+        };
+        broadcastToPeers(msg);
+    }
+    
+    function resetAllScores() {
+        if (!confirm("⚠️ 确定重置所有小组的星星吗？所有设备都会同步重置")) return;
+        for (let i = 1; i <= GROUP_COUNT; i++) {
+            scores[i] = 0;
+            lastCelebrationMilestone[i] = 0;
+        }
+        renderAllTeams();
+        updateLeaderHighlights();
+        broadcastToPeers({ type: 'reset_all' });
+    }
+    
+    function showCelebrationEffect() {
+        const layer = document.getElementById('celebrationLayer');
+        layer.style.display = 'block';
+        for (let i = 0; i < 35; i++) {
+            setTimeout(() => {
+                const starDiv = document.createElement('div');
+                starDiv.textContent = '🌟';
+                starDiv.style.position = 'absolute';
+                starDiv.style.left = Math.random() * 100 + 'vw';
+                starDiv.style.top = '-30px';
+                starDiv.style.fontSize = (28 + Math.random() * 40) + 'px';
+                starDiv.style.animation = `fall ${1.8 + Math.random() * 2.5}s linear forwards`;
+                starDiv.style.pointerEvents = 'none';
+                layer.appendChild(starDiv);
+                setTimeout(() => starDiv.remove(), 3000);
+            }, i * 70);
+        }
+        setTimeout(() => {
+            layer.style.display = 'none';
+            layer.innerHTML = '';
+        }, 2800);
+    }
+    
+    // 添加坠落动画
+    if (!document.querySelector('#dynamicStarKeyframe')) {
+        const styleSheet = document.createElement('style');
+        styleSheet.id = 'dynamicStarKeyframe';
+        styleSheet.textContent = `
+            @keyframes fall {
+                0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(400deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    }
+    
+    // 刷新连接 (重新加入当前房间)
+    function refreshConnection() {
+        if (currentRoomId) {
+            joinOrCreateRoom(currentRoomId);
+        } else {
+            let stored = initStoredRoomId();
+            joinOrCreateRoom(stored);
+        }
+    }
+    
+    // 复制房间码
+    function copyRoomId() {
+        if (currentRoomId) {
+            navigator.clipboard.writeText(currentRoomId).then(() => {
+                alert("房间码已复制: " + currentRoomId + "\n其他设备输入相同房间码即可同步");
+            }).catch(() => alert("手动复制: " + currentRoomId));
+        } else {
+            alert("尚未生成房间码");
+        }
+    }
+    
+    // 启动应用
+    function startApp() {
+        const initRoom = initStoredRoomId();
+        currentRoomId = initRoom;
+        document.getElementById('roomIdDisplay').innerText = currentRoomId;
+        renderAllTeams();
+        joinOrCreateRoom(currentRoomId);
+        
+        document.getElementById('globalResetBtn').addEventListener('click', resetAllScores);
+        document.getElementById('copyRoomBtn').addEventListener('click', copyRoomId);
+        document.getElementById('refreshConnectBtn').addEventListener('click', () => {
+            refreshConnection();
+        });
+        document.getElementById('joinRoomBtn').addEventListener('click', switchToRoom);
+        // 输入框支持回车
+        const inputEl = document.getElementById('targetRoomInput');
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') switchToRoom();
+        });
+    }
+    
+    startApp();
+</script>
+</body>
+</html>
